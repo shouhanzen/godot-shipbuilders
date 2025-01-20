@@ -1,25 +1,32 @@
-[gd_scene load_steps=9 format=3 uid="uid://0j67c5xdwsut"]
+[gd_scene load_steps=11 format=3 uid="uid://0j67c5xdwsut"]
 
 [ext_resource type="TileSet" uid="uid://b3vc7u7mutyv1" path="res://tilesets/basic_stone.tres" id="1_q7w06"]
 [ext_resource type="Script" path="res://src/editor_grid.gd" id="2_hug66"]
-[ext_resource type="Script" path="res://src/custom_mouse.gd" id="3_cd6b2"]
-[ext_resource type="Texture2D" uid="uid://6xpu1f3nmhrk" path="res://sprites/Dark/Arrows/Arrow1.png" id="3_td4cv"]
+[ext_resource type="AudioStream" uid="uid://bcnk4p7d37igr" path="res://audio/sfx/pneumatic-screwer/mixkit-garage-pneumatic-screwer-817.mp3" id="3_eovcu"]
 [ext_resource type="Material" uid="uid://caek8hlcujy82" path="res://materials/space_mat.tres" id="4_e8rjm"]
 [ext_resource type="Script" path="res://scenes/camera.gd" id="5_g3bcb"]
 [ext_resource type="AudioStream" uid="uid://ckkmmgfn1xqsc" path="res://audio/music/Adrift.mp3" id="7_1ix7m"]
-[ext_resource type="AudioStream" uid="uid://bckwa1ce3mqnk" path="res://audio/sfx/UI Soundpack/MP3/Abstract1.mp3" id="7_gcal0"]
+[ext_resource type="Texture2D" uid="uid://dic4xmiikes4t" path="res://sprites/icons/square.png" id="9_7nmvy"]
+[ext_resource type="PackedScene" uid="uid://b4h1m4muvhfsq" path="res://scenes/ui/toolbar_icon/toolbar_icon.tscn" id="9_587wh"]
+[ext_resource type="Texture2D" uid="uid://cypru38d1fjpx" path="res://sprites/icons/brick-wall.png" id="9_t45ra"]
+[ext_resource type="Texture2D" uid="uid://dsyrqfqpkx5bu" path="res://sprites/icons/platform.png" id="11_o5cwf"]
 
 [node name="Node2D" type="Node2D"]
 
 [node name="Grid" type="Node2D" parent="."]
 
-[node name="TileMapLayer" type="TileMapLayer" parent="Grid"]
+[node name="MainLayer" type="TileMapLayer" parent="Grid" groups=["editor_grid"]]
 tile_set = ExtResource("1_q7w06")
 script = ExtResource("2_hug66")
 
-[node name="GhostLayer" type="TileMapLayer" parent="Grid/TileMapLayer"]
+[node name="GhostLayer" type="TileMapLayer" parent="Grid/MainLayer"]
 modulate = Color(1, 1, 1, 0.470588)
 tile_set = ExtResource("1_q7w06")
+
+[node name="ConstructionSFX" type="AudioStreamPlayer" parent="Grid/MainLayer"]
+stream = ExtResource("3_eovcu")
+volume_db = -20.613
+bus = &"SFX"
 
 [node name="Camera" type="Node2D" parent="."]
 script = ExtResource("5_g3bcb")
@@ -40,21 +47,28 @@ grow_vertical = 2
 [node name="UI" type="CanvasLayer" parent="."]
 layer = 2
 
-[node name="Mouse" type="Control" parent="UI"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("3_cd6b2")
+[node name="Toolbar" type="HBoxContainer" parent="UI"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -79.0
+offset_right = 583.0
+grow_vertical = 0
 
-[node name="MouseSprite" type="Sprite2D" parent="UI/Mouse"]
-position = Vector2(8.5, 13.9583)
-scale = Vector2(0.472222, 0.472222)
-texture = ExtResource("3_td4cv")
+[node name="WallSelect" parent="UI/Toolbar" instance=ExtResource("9_587wh")]
+layout_mode = 2
+terrain_id = 0
+icon = ExtResource("9_t45ra")
 
-[node name="ClickSFX" type="AudioStreamPlayer" parent="UI/Mouse"]
-stream = ExtResource("7_gcal0")
-bus = &"SFX"
+[node name="FloorSelect" parent="UI/Toolbar" instance=ExtResource("9_587wh")]
+layout_mode = 2
+terrain_id = 1
+icon = ExtResource("11_o5cwf")
+
+[node name="RoomSelect" parent="UI/Toolbar" instance=ExtResource("9_587wh")]
+layout_mode = 2
+terrain_id = 1
+icon = ExtResource("9_7nmvy")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_1ix7m")

@@ -1,11 +1,16 @@
 extends TileMapLayer
 
 @onready var tile_ghost: TileMapLayer = $GhostLayer
+@onready var construction_sfx: AudioStreamPlayer = $ConstructionSFX
+
+enum PlacementMode {SINGLE_TILE, ROOM}
 
 # Currently selected terrain for placement
 var selected_terrain_id: int = 0
 var grid_color = Color(1, 1, 1, 0.1) # Faint white color
 var grid_size = 64 # Default grid size
+var current_mode: PlacementMode = PlacementMode.SINGLE_TILE
+var room_start_pos: Vector2i = Vector2i.ZERO
 
 # Store cells during drag operation
 var is_dragging: bool = false
@@ -47,6 +52,48 @@ func draw_grid() -> void:
         var to_pos = map_to_local(Vector2i(end_cell.x + 1, y)) + half_cell
         draw_line(from_pos, to_pos, grid_color)
 
+# Calculate room bounds from two points
+func get_room_bounds(start_pos: Vector2i, end_pos: Vector2i) -> Dictionary:
+    return {
+        "min_x": min(start_pos.x, end_pos.x),
+        "max_x": max(start_pos.x, end_pos.x),
+        "min_y": min(start_pos.y, end_pos.y),
+        "max_y": max(start_pos.y, end_pos.y)
+    }
+
+# Generate wall cells for a room
+func get_room_wall_cells(bounds: Dictionary) -> Array[Vector2i]:
+    var wall_cells: Array[Vector2i] = []
+    
+    # Add horizontal walls
+    for x in range(bounds.min_x, bounds.max_x + 1):
+        wall_cells.append(Vector2i(x, bounds.min_y)) # Top wall
+        wall_cells.append(Vector2i(x, bounds.max_y)) # Bottom wall
+    
+    # Add vertical walls
+    for y in range(bounds.min_y + 1, bounds.max_y):
+        wall_cells.append(Vector2i(bounds.min_x, y)) # Left wall
+        wall_cells.append(Vector2i(bounds.max_x, y)) # Right wall
+    
+    return wall_cells
+
+# Generate floor cells for a room
+func get_room_floor_cells(bounds: Dictionary) -> Array[Vector2i]:
+    var floor_cells: Array[Vector2i] = []
+    
+    for x in range(bounds.min_x + 1, bounds.max_x):
+        for y in range(bounds.min_y + 1, bounds.max_y):
+            floor_cells.append(Vector2i(x, y))
+    
+    return floor_cells
+
+# Place room tiles (walls and floor)
+func place_room(wall_cells: Array[Vector2i], floor_cells: Array[Vector2i], wall_terrain: int) -> void:
+    if wall_cells.size() > 0:
+        set_cells_terrain_connect(wall_cells, 0, wall_terrain)
+    if floor_cells.size() > 0:
+        set_cells_terrain_connect(floor_cells, 0, 1) # Floor uses terrain_id 1
+
 # Handle input events for tile placement and removal
 func _input(event: InputEvent) -> void:
     if event is InputEventMouseMotion:
@@ -62,33 +109,67 @@ func _input(event: InputEvent) -> void:
         # Update ghost preview
         tile_ghost.clear()
         if selected_terrain_id >= 0:
-            var ghost_cells = cells_to_place.duplicate()
-            if not is_dragging:
-                # Just show current cell if not dragging
-                ghost_cells = [Vector2i(cell.x, cell.y)]
-            elif not ghost_cells.has(Vector2i(cell.x, cell.y)):
-                # Add current cell to preview if dragging
-                ghost_cells.append(Vector2i(cell.x, cell.y))
-            tile_ghost.set_cells_terrain_connect(ghost_cells, 0, selected_terrain_id)
+            if current_mode == PlacementMode.SINGLE_TILE:
+                var ghost_cells = cells_to_place.duplicate()
+                if not is_dragging:
+                    # Just show current cell if not dragging
+                    ghost_cells = [Vector2i(cell.x, cell.y)]
+                elif not ghost_cells.has(Vector2i(cell.x, cell.y)):
+                    # Add current cell to preview if dragging
+                    ghost_cells.append(Vector2i(cell.x, cell.y))
+                tile_ghost.set_cells_terrain_connect(ghost_cells, 0, selected_terrain_id)
+            else: # ROOM mode
+                if is_dragging:
+                    var bounds = get_room_bounds(room_start_pos, cell)
+                    var ghost_wall_cells = get_room_wall_cells(bounds)
+                    var ghost_floor_cells = get_room_floor_cells(bounds)
+                    
+                    # Show ghost preview
+                    if ghost_wall_cells.size() > 0:
+                        tile_ghost.set_cells_terrain_connect(ghost_wall_cells, 0, selected_terrain_id)
+                    if ghost_floor_cells.size() > 0:
+                        tile_ghost.set_cells_terrain_connect(ghost_floor_cells, 0, 1)
+                else:
+                    # Just show current cell if not dragging
+                    tile_ghost.set_cells_terrain_connect([Vector2i(cell.x, cell.y)], 0, selected_terrain_id)
     
     elif event is InputEventMouseButton:
         var button = event.button_index
         
         if button == MOUSE_BUTTON_LEFT:
-            if event.pressed and selected_terrain_id >= 0:
-                # Start dragging
-                is_dragging = true
-                cells_to_place.clear()
-                # Add initial cell
-                var mouse_pos = get_global_mouse_position()
-                var cell = local_to_map(to_local(mouse_pos))
-                cells_to_place.append(Vector2i(cell.x, cell.y))
-            elif not event.pressed and is_dragging:
-                # End dragging and place all collected cells
-                if cells_to_place.size() > 0:
-                    set_cells_terrain_connect(cells_to_place, 0, selected_terrain_id)
-                is_dragging = false
-                cells_to_place.clear()
+            var mouse_pos = get_global_mouse_position()
+            var cell = local_to_map(to_local(mouse_pos))
+            
+            if current_mode == PlacementMode.SINGLE_TILE:
+                if event.pressed and selected_terrain_id >= 0:
+                    # Start dragging in single tile mode
+                    is_dragging = true
+                    cells_to_place.clear()
+                    cells_to_place.append(Vector2i(cell.x, cell.y))
+                elif not event.pressed and is_dragging:
+                    # End dragging and place all collected cells
+                    if cells_to_place.size() > 0:
+                        set_cells_terrain_connect(cells_to_place, 0, selected_terrain_id)
+                        construction_sfx.play()
+                    is_dragging = false
+                    cells_to_place.clear()
+            else: # ROOM mode
+                if event.pressed and selected_terrain_id >= 0:
+                    # Start room creation
+                    is_dragging = true
+                    room_start_pos = cell
+                    cells_to_place.clear()
+                elif not event.pressed and is_dragging:
+                    # Create room
+                    if cells_to_place.size() > 0:
+                        var bounds = get_room_bounds(room_start_pos, cell)
+                        var wall_cells = get_room_wall_cells(bounds)
+                        var floor_cells = get_room_floor_cells(bounds)
+                        
+                        place_room(wall_cells, floor_cells, selected_terrain_id)
+                        construction_sfx.play()
+                    is_dragging = false
+                    cells_to_place.clear()
         
         elif button == MOUSE_BUTTON_RIGHT and event.pressed:
             # Remove terrain
@@ -99,6 +180,14 @@ func _input(event: InputEvent) -> void:
 # Function to change the selected terrain
 func select_terrain(terrain_id: int) -> void:
     selected_terrain_id = terrain_id
+    
+# Function to toggle placement mode
+func toggle_placement_mode() -> void:
+    if current_mode == PlacementMode.SINGLE_TILE:
+        current_mode = PlacementMode.ROOM
+    else:
+        current_mode = PlacementMode.SINGLE_TILE
+
     # Update ghost tile appearance
     var mouse_pos = get_global_mouse_position()
     var cell = local_to_map(to_local(mouse_pos))

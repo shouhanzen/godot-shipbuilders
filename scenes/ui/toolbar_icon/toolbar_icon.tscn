@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://b4h1m4muvhfsq"]
+
+[ext_resource type="Script" path="res://scenes/ui/toolbar_icon/toolbar_icon.gd" id="1_1rxmg"]
+[ext_resource type="Texture2D" uid="uid://cypru38d1fjpx" path="res://sprites/icons/brick-wall.png" id="1_muctr"]
+
+[node name="ToolbarIcon" type="MarginContainer"]
+custom_minimum_size = Vector2(64, 64)
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_1rxmg")
+
+[node name="TextureButton" type="TextureButton" parent="."]
+layout_mode = 2
+texture_normal = ExtResource("1_muctr")
+ignore_texture_size = true
+stretch_mode = 5
