@@ -7,6 +7,10 @@ var selected_terrain_id: int = 0
 var grid_color = Color(1, 1, 1, 0.1) # Faint white color
 var grid_size = 64 # Default grid size
 
+# Store cells during drag operation
+var is_dragging: bool = false
+var cells_to_place: Array[Vector2i] = []
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     # Initialize any required setup
@@ -46,24 +50,50 @@ func draw_grid() -> void:
 # Handle input events for tile placement and removal
 func _input(event: InputEvent) -> void:
     if event is InputEventMouseMotion:
-        # Update ghost tile position
-        var mouse_pos = get_global_mouse_position()
-        var cell = local_to_map(to_local(mouse_pos))
-        tile_ghost.clear()
-        if selected_terrain_id >= 0:
-            var cells = [Vector2i(cell.x, cell.y)]
-            tile_ghost.set_cells_terrain_connect(cells, 0, selected_terrain_id)
-    
-    elif event is InputEventMouseButton and event.pressed:
+        # Update ghost tile position and collect cells during drag
         var mouse_pos = get_global_mouse_position()
         var cell = local_to_map(to_local(mouse_pos))
         
-        if event.button_index == MOUSE_BUTTON_LEFT and selected_terrain_id >= 0:
-            # Place terrain
-            var cells = [Vector2i(cell.x, cell.y)]
-            set_cells_terrain_connect(cells, 0, selected_terrain_id)
-        elif event.button_index == MOUSE_BUTTON_RIGHT:
+        # Add cell to collection if dragging
+        if is_dragging and selected_terrain_id >= 0:
+            if not cells_to_place.has(Vector2i(cell.x, cell.y)):
+                cells_to_place.append(Vector2i(cell.x, cell.y))
+        
+        # Update ghost preview
+        tile_ghost.clear()
+        if selected_terrain_id >= 0:
+            var ghost_cells = cells_to_place.duplicate()
+            if not is_dragging:
+                # Just show current cell if not dragging
+                ghost_cells = [Vector2i(cell.x, cell.y)]
+            elif not ghost_cells.has(Vector2i(cell.x, cell.y)):
+                # Add current cell to preview if dragging
+                ghost_cells.append(Vector2i(cell.x, cell.y))
+            tile_ghost.set_cells_terrain_connect(ghost_cells, 0, selected_terrain_id)
+    
+    elif event is InputEventMouseButton:
+        var button = event.button_index
+        
+        if button == MOUSE_BUTTON_LEFT:
+            if event.pressed and selected_terrain_id >= 0:
+                # Start dragging
+                is_dragging = true
+                cells_to_place.clear()
+                # Add initial cell
+                var mouse_pos = get_global_mouse_position()
+                var cell = local_to_map(to_local(mouse_pos))
+                cells_to_place.append(Vector2i(cell.x, cell.y))
+            elif not event.pressed and is_dragging:
+                # End dragging and place all collected cells
+                if cells_to_place.size() > 0:
+                    set_cells_terrain_connect(cells_to_place, 0, selected_terrain_id)
+                is_dragging = false
+                cells_to_place.clear()
+        
+        elif button == MOUSE_BUTTON_RIGHT and event.pressed:
             # Remove terrain
+            var mouse_pos = get_global_mouse_position()
+            var cell = local_to_map(to_local(mouse_pos))
             erase_cell(Vector2i(cell.x, cell.y))
 
 # Function to change the selected terrain
