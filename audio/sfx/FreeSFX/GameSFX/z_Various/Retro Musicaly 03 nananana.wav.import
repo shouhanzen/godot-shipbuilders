@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bboiuxejt1d5v"
+path="res://.godot/imported/Retro Musicaly 03 nananana.wav-91e59e5e4a09e7800a613d3d539069eb.sample"
+
+[deps]
+
+source_file="res://audio/sfx/FreeSFX/GameSFX/z_Various/Retro Musicaly 03 nananana.wav"
+dest_files=["res://.godot/imported/Retro Musicaly 03 nananana.wav-91e59e5e4a09e7800a613d3d539069eb.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

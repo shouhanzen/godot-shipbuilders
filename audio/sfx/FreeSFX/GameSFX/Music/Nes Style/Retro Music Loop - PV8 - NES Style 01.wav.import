@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://c6bhwntuoncwq"
+path="res://.godot/imported/Retro Music Loop - PV8 - NES Style 01.wav-ff51fe366179aeba370faddcd5f3e74e.sample"
+
+[deps]
+
+source_file="res://audio/sfx/FreeSFX/GameSFX/Music/Nes Style/Retro Music Loop - PV8 - NES Style 01.wav"
+dest_files=["res://.godot/imported/Retro Music Loop - PV8 - NES Style 01.wav-ff51fe366179aeba370faddcd5f3e74e.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

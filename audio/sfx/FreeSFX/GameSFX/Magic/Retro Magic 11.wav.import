@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cd681mxih80f3"
+path="res://.godot/imported/Retro Magic 11.wav-2d73fb142c73e74a9f0339d52b55190e.sample"
+
+[deps]
+
+source_file="res://audio/sfx/FreeSFX/GameSFX/Magic/Retro Magic 11.wav"
+dest_files=["res://.godot/imported/Retro Magic 11.wav-2d73fb142c73e74a9f0339d52b55190e.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

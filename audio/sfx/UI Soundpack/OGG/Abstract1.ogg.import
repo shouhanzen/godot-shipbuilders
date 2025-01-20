@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bb3xptg6bulaq"
+path="res://.godot/imported/Abstract1.ogg-fc6760e76503294c1c380ff87f2a3ddd.oggvorbisstr"
+
+[deps]
+
+source_file="res://audio/sfx/UI Soundpack/OGG/Abstract1.ogg"
+dest_files=["res://.godot/imported/Abstract1.ogg-fc6760e76503294c1c380ff87f2a3ddd.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

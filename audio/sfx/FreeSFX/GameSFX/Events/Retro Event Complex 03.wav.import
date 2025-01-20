@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b62t3tq2jh2tg"
+path="res://.godot/imported/Retro Event Complex 03.wav-1b5ec1f2701f0c1026f1c887641d2240.sample"
+
+[deps]
+
+source_file="res://audio/sfx/FreeSFX/GameSFX/Events/Retro Event Complex 03.wav"
+dest_files=["res://.godot/imported/Retro Event Complex 03.wav-1b5ec1f2701f0c1026f1c887641d2240.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

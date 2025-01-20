@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://ccxtfr0kt4rc2"
+path="res://.godot/imported/Retro Electric Long 09.wav-6c6890ee499ac8dd089668f9d377558e.sample"
+
+[deps]
+
+source_file="res://audio/sfx/FreeSFX/GameSFX/Electric/Retro Electric Long 09.wav"
+dest_files=["res://.godot/imported/Retro Electric Long 09.wav-6c6890ee499ac8dd089668f9d377558e.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

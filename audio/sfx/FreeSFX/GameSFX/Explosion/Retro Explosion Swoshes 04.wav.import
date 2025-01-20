@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://l6fsdj2cbdip"
+path="res://.godot/imported/Retro Explosion Swoshes 04.wav-480ff630cc97a7a413a36a5ec051abee.sample"
+
+[deps]
+
+source_file="res://audio/sfx/FreeSFX/GameSFX/Explosion/Retro Explosion Swoshes 04.wav"
+dest_files=["res://.godot/imported/Retro Explosion Swoshes 04.wav-480ff630cc97a7a413a36a5ec051abee.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0

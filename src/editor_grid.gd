@@ -1,7 +1,9 @@
 extends TileMapLayer
 
-# Currently selected tile coordinates for placement
-var selected_tile_coords: Vector2i = Vector2i(0, 0)
+@onready var tile_ghost: TileMapLayer = $GhostLayer
+
+# Currently selected terrain for placement
+var selected_terrain_id: int = 0
 var grid_color = Color(1, 1, 1, 0.1) # Faint white color
 var grid_size = 64 # Default grid size
 
@@ -43,20 +45,37 @@ func draw_grid() -> void:
 
 # Handle input events for tile placement and removal
 func _input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.pressed:
+    if event is InputEventMouseMotion:
+        # Update ghost tile position
+        var mouse_pos = get_global_mouse_position()
+        var cell = local_to_map(to_local(mouse_pos))
+        tile_ghost.clear()
+        if selected_terrain_id >= 0:
+            var cells = [Vector2i(cell.x, cell.y)]
+            tile_ghost.set_cells_terrain_connect(cells, 0, selected_terrain_id)
+    
+    elif event is InputEventMouseButton and event.pressed:
         var mouse_pos = get_global_mouse_position()
         var cell = local_to_map(to_local(mouse_pos))
         
-        if event.button_index == MOUSE_BUTTON_LEFT:
-            # Place tile
-            set_cell(Vector2i(cell.x, cell.y), 0, selected_tile_coords)
+        if event.button_index == MOUSE_BUTTON_LEFT and selected_terrain_id >= 0:
+            # Place terrain
+            var cells = [Vector2i(cell.x, cell.y)]
+            set_cells_terrain_connect(cells, 0, selected_terrain_id)
         elif event.button_index == MOUSE_BUTTON_RIGHT:
-            # Remove tile
+            # Remove terrain
             erase_cell(Vector2i(cell.x, cell.y))
 
-# Function to change the selected tile
-func select_tile(tile_coords: Vector2i) -> void:
-    selected_tile_coords = tile_coords
+# Function to change the selected terrain
+func select_terrain(terrain_id: int) -> void:
+    selected_terrain_id = terrain_id
+    # Update ghost tile appearance
+    var mouse_pos = get_global_mouse_position()
+    var cell = local_to_map(to_local(mouse_pos))
+    tile_ghost.clear()
+    if selected_terrain_id >= 0:
+        var cells = [Vector2i(cell.x, cell.y)]
+        tile_ghost.set_cells_terrain_connect(cells, 0, selected_terrain_id)
 
 # Save the current grid layout to a file
 func save_grid(path: String) -> void:
@@ -64,7 +83,9 @@ func save_grid(path: String) -> void:
     if file != null:
         var cells = {}
         for cell in get_used_cells():
-            cells[var_to_str(cell)] = get_cell_source_id(cell)
+            var tile_data = get_cell_tile_data(cell)
+            if tile_data:
+                cells[var_to_str(cell)] = tile_data.terrain
         file.store_string(JSON.stringify(cells))
         file.close()
 
@@ -79,8 +100,10 @@ func load_grid(path: String) -> void:
             # Clear current grid
             clear()
             
-            # Place loaded tiles
+            # Place loaded terrains
             for cell_str in cells.keys():
                 var cell = str_to_var(cell_str)
-                var tile_coords = str_to_var(cells[cell_str])
-                set_cell(cell, 0, tile_coords)
+                var terrain_id = str_to_var(cells[cell_str])
+                if terrain_id >= 0:
+                    var cells_to_set = [cell]
+                    set_cells_terrain_connect(cells_to_set, 0, terrain_id)

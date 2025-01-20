@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bb4iyaus51yac"
+path="res://.godot/imported/Retro Charge Magic 11.wav-8bdc7c7009ec1324f551fe5d6a353906.sample"
+
+[deps]
+
+source_file="res://audio/sfx/FreeSFX/GameSFX/Charge/Retro Charge Magic 11.wav"
+dest_files=["res://.godot/imported/Retro Charge Magic 11.wav-8bdc7c7009ec1324f551fe5d6a353906.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
