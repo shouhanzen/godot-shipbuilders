@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://caek8hlcujy82"]
+
+[ext_resource type="Shader" path="res://src/shaders/space.gdshader" id="1_6h428"]
+
+[resource]
+shader = ExtResource("1_6h428")
+shader_parameter/bg_color = null
+shader_parameter/offset = null
+shader_parameter/bigStarSlow = 2.0
+shader_parameter/mediumStarSlow = 6.0
+shader_parameter/smallStarSlow = 8.0
+shader_parameter/smallStarAmount = 0.002
+shader_parameter/mediumStarAmount = 0.01
+shader_parameter/bigStarAmount = 0.02

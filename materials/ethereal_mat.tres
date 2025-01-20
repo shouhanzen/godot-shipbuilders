@@ -1,0 +1,6 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://w1alutw7fbl8"]
+
+[ext_resource type="Shader" path="res://src/shaders/ethereal.gdshader" id="1_n0fdd"]
+
+[resource]
+shader = ExtResource("1_n0fdd")
