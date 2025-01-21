@@ -1,7 +1,10 @@
 @tool
 extends MarginContainer
 
+const PlacementMode = preload("res://src/editor_grid.gd").PlacementMode
+
 @export var terrain_id: int = -1
+@export var placement_mode: PlacementMode = PlacementMode.SINGLE_TILE
 
 const HOVER_BRIGHTNESS = 1.2
 const NORMAL_BRIGHTNESS = 1.0
@@ -37,3 +40,5 @@ func _on_button_pressed() -> void:
 	var editor_grid = get_tree().get_first_node_in_group("editor_grid")
 	if editor_grid:
 		editor_grid.select_terrain(terrain_id)
+		if placement_mode >= 0:
+			editor_grid.current_mode = placement_mode

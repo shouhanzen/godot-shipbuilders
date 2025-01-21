@@ -7,50 +7,12 @@ enum PlacementMode {SINGLE_TILE, ROOM}
 
 # Currently selected terrain for placement
 var selected_terrain_id: int = 0
-var grid_color = Color(1, 1, 1, 0.1) # Faint white color
-var grid_size = 64 # Default grid size
 var current_mode: PlacementMode = PlacementMode.SINGLE_TILE
 var room_start_pos: Vector2i = Vector2i.ZERO
 
 # Store cells during drag operation
 var is_dragging: bool = false
 var cells_to_place: Array[Vector2i] = []
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-    # Initialize any required setup
-    queue_redraw()
-
-# Override _draw to render grid lines
-func _draw() -> void:
-    draw_grid()
-
-# Draw the grid lines
-func draw_grid() -> void:
-    if not tile_set:
-        return
-        
-    var viewport_rect = get_viewport_rect()
-    var start_pos = to_local(viewport_rect.position)
-    var end_pos = to_local(viewport_rect.end)
-    
-    var start_cell = local_to_map(start_pos)
-    var end_cell = local_to_map(end_pos)
-    
-    # Get half cell size for offset
-    var half_cell = Vector2(tile_set.tile_size) / 2
-    
-    # Draw vertical lines
-    for x in range(start_cell.x - 1, end_cell.x + 2):
-        var from_pos = map_to_local(Vector2i(x, start_cell.y - 1)) + half_cell
-        var to_pos = map_to_local(Vector2i(x, end_cell.y + 1)) + half_cell
-        draw_line(from_pos, to_pos, grid_color)
-    
-    # Draw horizontal lines
-    for y in range(start_cell.y - 1, end_cell.y + 2):
-        var from_pos = map_to_local(Vector2i(start_cell.x - 1, y)) + half_cell
-        var to_pos = map_to_local(Vector2i(end_cell.x + 1, y)) + half_cell
-        draw_line(from_pos, to_pos, grid_color)
 
 # Calculate room bounds from two points
 func get_room_bounds(start_pos: Vector2i, end_pos: Vector2i) -> Dictionary:
@@ -175,7 +137,23 @@ func _input(event: InputEvent) -> void:
             # Remove terrain
             var mouse_pos = get_global_mouse_position()
             var cell = local_to_map(to_local(mouse_pos))
-            erase_cell(Vector2i(cell.x, cell.y))
+            var cell_vec = Vector2i(cell.x, cell.y)
+            # Get terrain type before erasing
+            var terrain_id = get_cell_tile_data(cell_vec).terrain if get_cell_tile_data(cell_vec) else -1
+            erase_cell(cell_vec)
+            # Update surrounding cells if there was terrain
+            if terrain_id >= 0:
+                # Get neighboring cells
+                var neighbors = [
+                    Vector2i(cell.x - 1, cell.y),
+                    Vector2i(cell.x + 1, cell.y),
+                    Vector2i(cell.x, cell.y - 1),
+                    Vector2i(cell.x, cell.y + 1)
+                ]
+                # Update terrain connections for neighbors
+                for neighbor in neighbors:
+                    if get_cell_tile_data(neighbor):
+                        set_cells_terrain_connect([neighbor], 0, terrain_id)
 
 # Function to change the selected terrain
 func select_terrain(terrain_id: int) -> void:

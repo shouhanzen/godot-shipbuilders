@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://0j67c5xdwsut"]
+[gd_scene load_steps=12 format=3 uid="uid://0j67c5xdwsut"]
 
 [ext_resource type="TileSet" uid="uid://b3vc7u7mutyv1" path="res://tilesets/basic_stone.tres" id="1_q7w06"]
 [ext_resource type="Script" path="res://src/editor_grid.gd" id="2_hug66"]
 [ext_resource type="AudioStream" uid="uid://bcnk4p7d37igr" path="res://audio/sfx/pneumatic-screwer/mixkit-garage-pneumatic-screwer-817.mp3" id="3_eovcu"]
+[ext_resource type="Script" path="res://src/grid_lines_renderer.gd" id="4_bpl5n"]
 [ext_resource type="Material" uid="uid://caek8hlcujy82" path="res://materials/space_mat.tres" id="4_e8rjm"]
 [ext_resource type="Script" path="res://scenes/camera.gd" id="5_g3bcb"]
 [ext_resource type="AudioStream" uid="uid://ckkmmgfn1xqsc" path="res://audio/music/Adrift.mp3" id="7_1ix7m"]
@@ -27,6 +28,10 @@ tile_set = ExtResource("1_q7w06")
 stream = ExtResource("3_eovcu")
 volume_db = -20.613
 bus = &"SFX"
+
+[node name="GridLinesRenderer" type="Node2D" parent="Grid/MainLayer" node_paths=PackedStringArray("tilemap")]
+script = ExtResource("4_bpl5n")
+tilemap = NodePath("..")
 
 [node name="Camera" type="Node2D" parent="."]
 script = ExtResource("5_g3bcb")
@@ -67,7 +72,8 @@ icon = ExtResource("11_o5cwf")
 
 [node name="RoomSelect" parent="UI/Toolbar" instance=ExtResource("9_587wh")]
 layout_mode = 2
-terrain_id = 1
+terrain_id = 0
+placement_mode = 1
 icon = ExtResource("9_7nmvy")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
