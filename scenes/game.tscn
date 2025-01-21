@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://0j67c5xdwsut"]
+[gd_scene load_steps=22 format=4 uid="uid://0j67c5xdwsut"]
 
 [ext_resource type="Script" path="res://src/grid.gd" id="1_m77mo"]
 [ext_resource type="TileSet" uid="uid://b3vc7u7mutyv1" path="res://tilesets/basic_stone.tres" id="1_q7w06"]
@@ -6,12 +6,64 @@
 [ext_resource type="Texture2D" uid="uid://6xpu1f3nmhrk" path="res://sprites/Dark/Arrows/Arrow1.png" id="3_td4cv"]
 [ext_resource type="Script" path="res://src/grid_lines_renderer.gd" id="4_bpl5n"]
 [ext_resource type="Material" uid="uid://caek8hlcujy82" path="res://materials/space_mat.tres" id="4_e8rjm"]
+[ext_resource type="PackedScene" uid="uid://buu55kay33ai0" path="res://scenes/furniture/core/core.tscn" id="5_5p1kq"]
 [ext_resource type="Script" path="res://scenes/camera.gd" id="5_g3bcb"]
+[ext_resource type="Texture2D" uid="uid://b25ee2kn78sa6" path="res://sprites/TinyRPGCharSet/Characters(100x100)/Orc/Orc/Orc-Idle.png" id="6_wkv3c"]
 [ext_resource type="AudioStream" uid="uid://ckkmmgfn1xqsc" path="res://audio/music/Adrift.mp3" id="7_1ix7m"]
 [ext_resource type="Texture2D" uid="uid://dic4xmiikes4t" path="res://sprites/icons/square.png" id="9_7nmvy"]
 [ext_resource type="PackedScene" uid="uid://b4h1m4muvhfsq" path="res://scenes/ui/toolbar_icon/toolbar_icon.tscn" id="9_587wh"]
 [ext_resource type="Texture2D" uid="uid://cypru38d1fjpx" path="res://sprites/icons/brick-wall.png" id="9_t45ra"]
 [ext_resource type="Texture2D" uid="uid://dsyrqfqpkx5bu" path="res://sprites/icons/platform.png" id="11_o5cwf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_625yr"]
+atlas = ExtResource("6_wkv3c")
+region = Rect2(0, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4sali"]
+atlas = ExtResource("6_wkv3c")
+region = Rect2(100, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2m7kh"]
+atlas = ExtResource("6_wkv3c")
+region = Rect2(200, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ck7fp"]
+atlas = ExtResource("6_wkv3c")
+region = Rect2(300, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t0hwn"]
+atlas = ExtResource("6_wkv3c")
+region = Rect2(400, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_55v1q"]
+atlas = ExtResource("6_wkv3c")
+region = Rect2(500, 0, 100, 100)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1shf4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_625yr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4sali")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2m7kh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ck7fp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t0hwn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_55v1q")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [node name="Node2D" type="Node2D"]
 
@@ -27,18 +79,31 @@ bus = &"SFX"
 script = ExtResource("4_bpl5n")
 tilemap = NodePath("../WallsLayer")
 
-[node name="GhostLayer" type="TileMapLayer" parent="Grid"]
-modulate = Color(1, 1, 1, 0.470588)
-tile_set = ExtResource("1_q7w06")
-
 [node name="FloorsLayer" type="TileMapLayer" parent="Grid"]
+tile_map_data = PackedByteArray("AAD+/wIAAQAAAAAAAAD//wIAAQAAAAAAAAAAAAIAAQAAAAAAAAABAAIAAQAAAAAAAAD9/wIAAQAAAAAAAAD9/wEAAQAAAAAAAAD9/wAAAQAAAAAAAAD9////AQAAAAAAAAD9//7/AQAAAAAAAAD9//3/AQAAAAAAAAD+//3/AQAAAAAAAAD///3/AQAAAAAAAAAAAP3/AQAAAAAAAAABAP3/AQAAAAAAAAACAP3/AQAAAAAAAAACAP7/AQAAAAAAAAACAP//AQAAAAAAAAACAAAAAQAAAAAAAAACAAEAAQAAAAAAAAACAAIAAQAAAAAAAAABAAEAAQAAAAAAAAAAAAEAAQAAAAAAAAD//wEAAQAAAAAAAAD+/wEAAQAAAAAAAAD+/wAAAQAAAAAAAAD//wAAAQAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAQAAAAAAAAABAP//AQAAAAAAAAAAAP//AQAAAAAAAAD/////AQAAAAAAAAD+////AQAAAAAAAAD+//7/AQAAAAAAAAD///7/AQAAAAAAAAAAAP7/AQAAAAAAAAABAP7/AQAAAAAAAAA=")
 tile_set = ExtResource("1_q7w06")
 
 [node name="WallsLayer" type="TileMapLayer" parent="Grid"]
+tile_map_data = PackedByteArray("AAD9/wIAAAAFAAIAAAD9/wEAAAADAAEAAAD9/wAAAAADAAEAAAD9////AAADAAEAAAD9//7/AAADAAEAAAD9//3/AAAFAAAAAAD+//3/AAABAAMAAAD///3/AAABAAMAAAAAAP3/AAABAAMAAAABAP3/AAABAAMAAAACAP3/AAAHAAAAAAACAP7/AAADAAEAAAACAP//AAADAAEAAAACAAAAAAADAAEAAAACAAEAAAADAAEAAAACAAIAAAAHAAIAAAABAAIAAAABAAMAAAAAAAIAAAABAAMAAAD//wIAAAABAAMAAAD+/wIAAAABAAMAAAA=")
 tile_set = ExtResource("1_q7w06")
 
 [node name="PropsLayer" type="TileMapLayer" parent="Grid"]
 tile_set = ExtResource("1_q7w06")
+
+[node name="Core" parent="Grid/PropsLayer" groups=["core"] instance=ExtResource("5_5p1kq")]
+
+[node name="GhostLayer" type="TileMapLayer" parent="Grid"]
+modulate = Color(1, 1, 1, 0.470588)
+tile_set = ExtResource("1_q7w06")
+
+[node name="Agents" type="Node2D" parent="."]
+
+[node name="Orc" type="Node2D" parent="Agents"]
+position = Vector2(-376, 1)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Agents/Orc"]
+sprite_frames = SubResource("SpriteFrames_1shf4")
+autoplay = "default"
 
 [node name="Camera" type="Node2D" parent="."]
 script = ExtResource("5_g3bcb")

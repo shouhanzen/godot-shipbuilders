@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dihtkhnnppjkn"]
 
-[ext_resource type="Script" path="res://src/custom_mouse.gd" id="1_6kunl"]
+[ext_resource type="Script" path="res://src/deprecated/custom_mouse.gd" id="1_6kunl"]
 [ext_resource type="Texture2D" uid="uid://6xpu1f3nmhrk" path="res://sprites/Dark/Arrows/Arrow1.png" id="2_inmkk"]
 [ext_resource type="AudioStream" uid="uid://bckwa1ce3mqnk" path="res://audio/sfx/UI Soundpack/MP3/Abstract1.mp3" id="3_81rb1"]
 

@@ -1,0 +1,117 @@
+[gd_scene load_steps=17 format=3 uid="uid://buu55kay33ai0"]
+
+[ext_resource type="Texture2D" uid="uid://rvb3t8m30pvl" path="res://sprites/scifi-furniture/Animated-Monitors-Sheet-14Frames.png" id="1_q37n4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ad411"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(0, 0, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2wjiq"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(144, 0, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qjuxh"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(288, 0, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5414t"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(0, 96, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vp2t3"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(144, 96, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nvyoj"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(288, 96, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7kg8y"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(0, 192, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_urngs"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(144, 192, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bv3op"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(288, 192, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ag17i"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(0, 288, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_awiir"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(144, 288, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ocjga"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(288, 288, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5fqyw"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(0, 384, 144, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tuakm"]
+atlas = ExtResource("1_q37n4")
+region = Rect2(144, 384, 144, 96)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_a8pof"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ad411")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2wjiq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qjuxh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5414t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vp2t3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nvyoj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7kg8y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_urngs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bv3op")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ag17i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_awiir")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ocjga")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5fqyw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tuakm")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Core" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.59375, 0.59375)
+sprite_frames = SubResource("SpriteFrames_a8pof")
+autoplay = "default"
+frame_progress = 0.222671
