@@ -9,20 +9,30 @@ const GRID_SCALES = [
 ]
 
 var base_grid_color = Color(1, 1, 1, 0.1) # Faint white color
+var target_opacity = 1.0
+var current_opacity = 1.0
+const OPACITY_LERP_SPEED = 10.0
+
+func set_opacity(value: float) -> void:
+	target_opacity = value
+	queue_redraw()
 
 func _ready() -> void:
 	queue_redraw()
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	current_opacity = lerp(current_opacity, target_opacity, delta * OPACITY_LERP_SPEED)
+	
 	queue_redraw()
 
 func _draw() -> void:
-	if not tilemap or not tilemap.tile_set:
+	if not tilemap or not tilemap.tile_set or current_opacity <= 0:
 		return
 		
 	var camera = get_viewport().get_camera_2d()
 	if not camera:
 		return
+	
 		
 	var viewport_rect = get_viewport_rect()
 	var camera_pos = camera.global_position
@@ -38,9 +48,10 @@ func _draw() -> void:
 	var start_cell = tilemap.local_to_map(start_pos)
 	var end_cell = tilemap.local_to_map(end_pos)
 	
-	# Add extra buffer to ensure coverage during movement and zooming
-	start_cell -= Vector2i(5, 5)
-	end_cell += Vector2i(5, 5)
+	# Add dynamic buffer based on zoom level to ensure coverage during movement and zooming
+	var buffer_size = int(max(10.0 / camera_zoom.x, 5))
+	start_cell -= Vector2i(buffer_size, buffer_size)
+	end_cell += Vector2i(buffer_size, buffer_size)
 	
 	# Get half cell size for offset
 	var half_cell = Vector2(tilemap.tile_set.tile_size) / 2
@@ -66,7 +77,7 @@ func _draw() -> void:
 			opacity_factor = 1.0 - smoothstep(scale_info["max_zoom"], max_with_falloff, zoom_factor)
 			
 		var grid_color = base_grid_color
-		grid_color.a *= opacity_factor
+		grid_color.a *= opacity_factor * current_opacity
 		
 		if opacity_factor <= 0:
 			continue

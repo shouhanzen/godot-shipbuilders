@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://0j67c5xdwsut"]
+[gd_scene load_steps=13 format=3 uid="uid://0j67c5xdwsut"]
 
+[ext_resource type="Script" path="res://src/grid.gd" id="1_m77mo"]
 [ext_resource type="TileSet" uid="uid://b3vc7u7mutyv1" path="res://tilesets/basic_stone.tres" id="1_q7w06"]
-[ext_resource type="Script" path="res://src/editor_grid.gd" id="2_hug66"]
 [ext_resource type="AudioStream" uid="uid://bcnk4p7d37igr" path="res://audio/sfx/pneumatic-screwer/mixkit-garage-pneumatic-screwer-817.mp3" id="3_eovcu"]
+[ext_resource type="Texture2D" uid="uid://6xpu1f3nmhrk" path="res://sprites/Dark/Arrows/Arrow1.png" id="3_td4cv"]
 [ext_resource type="Script" path="res://src/grid_lines_renderer.gd" id="4_bpl5n"]
 [ext_resource type="Material" uid="uid://caek8hlcujy82" path="res://materials/space_mat.tres" id="4_e8rjm"]
 [ext_resource type="Script" path="res://scenes/camera.gd" id="5_g3bcb"]
@@ -14,24 +15,30 @@
 
 [node name="Node2D" type="Node2D"]
 
-[node name="Grid" type="Node2D" parent="."]
+[node name="Grid" type="Node2D" parent="." groups=["editor_grid"]]
+script = ExtResource("1_m77mo")
 
-[node name="MainLayer" type="TileMapLayer" parent="Grid" groups=["editor_grid"]]
-tile_set = ExtResource("1_q7w06")
-script = ExtResource("2_hug66")
-
-[node name="GhostLayer" type="TileMapLayer" parent="Grid/MainLayer"]
-modulate = Color(1, 1, 1, 0.470588)
-tile_set = ExtResource("1_q7w06")
-
-[node name="ConstructionSFX" type="AudioStreamPlayer" parent="Grid/MainLayer"]
+[node name="ConstructionSFX" type="AudioStreamPlayer" parent="Grid"]
 stream = ExtResource("3_eovcu")
 volume_db = -20.613
 bus = &"SFX"
 
-[node name="GridLinesRenderer" type="Node2D" parent="Grid/MainLayer" node_paths=PackedStringArray("tilemap")]
+[node name="GridLinesRenderer" type="Node2D" parent="Grid" node_paths=PackedStringArray("tilemap")]
 script = ExtResource("4_bpl5n")
-tilemap = NodePath("..")
+tilemap = NodePath("../WallsLayer")
+
+[node name="GhostLayer" type="TileMapLayer" parent="Grid"]
+modulate = Color(1, 1, 1, 0.470588)
+tile_set = ExtResource("1_q7w06")
+
+[node name="FloorsLayer" type="TileMapLayer" parent="Grid"]
+tile_set = ExtResource("1_q7w06")
+
+[node name="WallsLayer" type="TileMapLayer" parent="Grid"]
+tile_set = ExtResource("1_q7w06")
+
+[node name="PropsLayer" type="TileMapLayer" parent="Grid"]
+tile_set = ExtResource("1_q7w06")
 
 [node name="Camera" type="Node2D" parent="."]
 script = ExtResource("5_g3bcb")
@@ -60,6 +67,10 @@ offset_top = -79.0
 offset_right = 583.0
 grow_vertical = 0
 
+[node name="NoneSelect" parent="UI/Toolbar" instance=ExtResource("9_587wh")]
+layout_mode = 2
+icon = ExtResource("3_td4cv")
+
 [node name="WallSelect" parent="UI/Toolbar" instance=ExtResource("9_587wh")]
 layout_mode = 2
 terrain_id = 0
@@ -68,6 +79,7 @@ icon = ExtResource("9_t45ra")
 [node name="FloorSelect" parent="UI/Toolbar" instance=ExtResource("9_587wh")]
 layout_mode = 2
 terrain_id = 1
+layer_type = 1
 icon = ExtResource("11_o5cwf")
 
 [node name="RoomSelect" parent="UI/Toolbar" instance=ExtResource("9_587wh")]

@@ -1,19 +1,38 @@
-extends TileMapLayer
+extends Node2D
 
 @onready var tile_ghost: TileMapLayer = $GhostLayer
 @onready var construction_sfx: AudioStreamPlayer = $ConstructionSFX
 @onready var grid_lines: Node2D = $GridLinesRenderer
 
-enum PlacementMode {SINGLE_TILE, ROOM}
+# Layer references
+@onready var walls_layer: TileMapLayer = $WallsLayer
+@onready var floors_layer: TileMapLayer = $FloorsLayer
+@onready var props_layer: TileMapLayer = $PropsLayer
 
-# Currently selected terrain for placement
+enum PlacementMode {SINGLE_TILE, ROOM}
+enum LayerType {WALLS, FLOORS, PROPS}
+
+# Currently selected options for placement
 var selected_terrain_id: int = 0
+var selected_layer: LayerType = LayerType.WALLS
 var current_mode: PlacementMode = PlacementMode.SINGLE_TILE
 var room_start_pos: Vector2i = Vector2i.ZERO
 
 # Store cells during drag operation
 var is_dragging: bool = false
 var cells_to_place: Array[Vector2i] = []
+
+# Get the active layer based on selected type
+func get_active_layer() -> TileMapLayer:
+    match selected_layer:
+        LayerType.WALLS:
+            return walls_layer
+        LayerType.FLOORS:
+            return floors_layer
+        LayerType.PROPS:
+            return props_layer
+        _:
+            return walls_layer
 
 # Calculate room bounds from two points
 func get_room_bounds(start_pos: Vector2i, end_pos: Vector2i) -> Dictionary:
@@ -53,9 +72,9 @@ func get_room_floor_cells(bounds: Dictionary) -> Array[Vector2i]:
 # Place room tiles (walls and floor)
 func place_room(wall_cells: Array[Vector2i], floor_cells: Array[Vector2i], wall_terrain: int) -> void:
     if wall_cells.size() > 0:
-        set_cells_terrain_connect(wall_cells, 0, wall_terrain)
+        walls_layer.set_cells_terrain_connect(wall_cells, 0, wall_terrain)
     if floor_cells.size() > 0:
-        set_cells_terrain_connect(floor_cells, 0, 1) # Floor uses terrain_id 1
+        floors_layer.set_cells_terrain_connect(floor_cells, 0, 1) # Floor uses terrain_id 1
 
 # Handle input events for tile placement and removal
 func _input(event: InputEvent) -> void:
@@ -66,11 +85,13 @@ func _input(event: InputEvent) -> void:
         if canvas_layer != null and canvas_layer.layer > 0:
             tile_ghost.clear()
             return
+    
+    var active_layer = get_active_layer()
         
     if event is InputEventMouseMotion:
         # Update ghost tile position and collect cells during drag
         var mouse_pos = get_global_mouse_position()
-        var cell = local_to_map(to_local(mouse_pos))
+        var cell = active_layer.local_to_map(active_layer.to_local(mouse_pos))
         
         # Add cell to collection if dragging
         if is_dragging and selected_terrain_id >= 0:
@@ -109,7 +130,7 @@ func _input(event: InputEvent) -> void:
         
         if button == MOUSE_BUTTON_LEFT:
             var mouse_pos = get_global_mouse_position()
-            var cell = local_to_map(to_local(mouse_pos))
+            var cell = active_layer.local_to_map(active_layer.to_local(mouse_pos))
             
             if current_mode == PlacementMode.SINGLE_TILE:
                 if event.pressed and selected_terrain_id >= 0:
@@ -120,7 +141,7 @@ func _input(event: InputEvent) -> void:
                 elif not event.pressed and is_dragging:
                     # End dragging and place all collected cells
                     if cells_to_place.size() > 0:
-                        set_cells_terrain_connect(cells_to_place, 0, selected_terrain_id)
+                        active_layer.set_cells_terrain_connect(cells_to_place, 0, selected_terrain_id)
                         construction_sfx.play()
                     is_dragging = false
                     cells_to_place.clear()
@@ -145,11 +166,11 @@ func _input(event: InputEvent) -> void:
         elif button == MOUSE_BUTTON_RIGHT and event.pressed:
             # Remove terrain
             var mouse_pos = get_global_mouse_position()
-            var cell = local_to_map(to_local(mouse_pos))
+            var cell = active_layer.local_to_map(active_layer.to_local(mouse_pos))
             var cell_vec = Vector2i(cell.x, cell.y)
             # Get terrain type before erasing
-            var terrain_id = get_cell_tile_data(cell_vec).terrain if get_cell_tile_data(cell_vec) else -1
-            erase_cell(cell_vec)
+            var terrain_id = active_layer.get_cell_tile_data(cell_vec).terrain if active_layer.get_cell_tile_data(cell_vec) else -1
+            active_layer.erase_cell(cell_vec)
             # Update surrounding cells if there was terrain
             if terrain_id >= 0:
                 # Get neighboring cells
@@ -161,13 +182,17 @@ func _input(event: InputEvent) -> void:
                 ]
                 # Update terrain connections for neighbors
                 for neighbor in neighbors:
-                    if get_cell_tile_data(neighbor):
-                        set_cells_terrain_connect([neighbor], 0, terrain_id)
+                    if active_layer.get_cell_tile_data(neighbor):
+                        active_layer.set_cells_terrain_connect([neighbor], 0, terrain_id)
 
 # Function to change the selected terrain
 func select_terrain(terrain_id: int) -> void:
     selected_terrain_id = terrain_id
     grid_lines.set_opacity(1.0 if terrain_id >= 0 else 0.0)
+
+# Function to change the selected layer
+func select_layer(layer_type: LayerType) -> void:
+    selected_layer = layer_type
     
 # Function to toggle placement mode
 func toggle_placement_mode() -> void:
@@ -178,7 +203,7 @@ func toggle_placement_mode() -> void:
 
     # Update ghost tile appearance
     var mouse_pos = get_global_mouse_position()
-    var cell = local_to_map(to_local(mouse_pos))
+    var cell = get_active_layer().local_to_map(get_active_layer().to_local(mouse_pos))
     tile_ghost.clear()
     if selected_terrain_id >= 0:
         var cells = [Vector2i(cell.x, cell.y)]
@@ -188,12 +213,31 @@ func toggle_placement_mode() -> void:
 func save_grid(path: String) -> void:
     var file = FileAccess.open(path, FileAccess.WRITE)
     if file != null:
-        var cells = {}
-        for cell in get_used_cells():
-            var tile_data = get_cell_tile_data(cell)
+        var grid_data = {
+            "walls": {},
+            "floors": {},
+            "props": {}
+        }
+        
+        # Save walls
+        for cell in walls_layer.get_used_cells():
+            var tile_data = walls_layer.get_cell_tile_data(cell)
             if tile_data:
-                cells[var_to_str(cell)] = tile_data.terrain
-        file.store_string(JSON.stringify(cells))
+                grid_data.walls[var_to_str(cell)] = tile_data.terrain
+                
+        # Save floors
+        for cell in floors_layer.get_used_cells():
+            var tile_data = floors_layer.get_cell_tile_data(cell)
+            if tile_data:
+                grid_data.floors[var_to_str(cell)] = tile_data.terrain
+                
+        # Save props
+        for cell in props_layer.get_used_cells():
+            var tile_data = props_layer.get_cell_tile_data(cell)
+            if tile_data:
+                grid_data.props[var_to_str(cell)] = tile_data.terrain
+                
+        file.store_string(JSON.stringify(grid_data))
         file.close()
 
 # Load a grid layout from a file
@@ -201,16 +245,31 @@ func load_grid(path: String) -> void:
     if FileAccess.file_exists(path):
         var file = FileAccess.open(path, FileAccess.READ)
         if file != null:
-            var cells = JSON.parse_string(file.get_as_text())
+            var grid_data = JSON.parse_string(file.get_as_text())
             file.close()
             
-            # Clear current grid
-            clear()
+            # Clear all layers
+            walls_layer.clear()
+            floors_layer.clear()
+            props_layer.clear()
             
-            # Place loaded terrains
-            for cell_str in cells.keys():
+            # Load walls
+            for cell_str in grid_data.walls.keys():
                 var cell = str_to_var(cell_str)
-                var terrain_id = str_to_var(cells[cell_str])
+                var terrain_id = str_to_var(grid_data.walls[cell_str])
                 if terrain_id >= 0:
-                    var cells_to_set = [cell]
-                    set_cells_terrain_connect(cells_to_set, 0, terrain_id)
+                    walls_layer.set_cells_terrain_connect([cell], 0, terrain_id)
+                    
+            # Load floors
+            for cell_str in grid_data.floors.keys():
+                var cell = str_to_var(cell_str)
+                var terrain_id = str_to_var(grid_data.floors[cell_str])
+                if terrain_id >= 0:
+                    floors_layer.set_cells_terrain_connect([cell], 0, terrain_id)
+                    
+            # Load props
+            for cell_str in grid_data.props.keys():
+                var cell = str_to_var(cell_str)
+                var terrain_id = str_to_var(grid_data.props[cell_str])
+                if terrain_id >= 0:
+                    props_layer.set_cells_terrain_connect([cell], 0, terrain_id)
