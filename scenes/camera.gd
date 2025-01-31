@@ -1,5 +1,7 @@
 extends Node2D
 
+signal transform_changed
+
 @export var speed: float = 500.0  # Movement speed in pixels per second
 @export var smoothing: float = 5.0  # Higher values mean smoother movement
 @export var min_zoom: float = 0.1
@@ -10,6 +12,7 @@ var target_position: Vector2 = Vector2.ZERO
 var target_zoom: float = 1.0
 
 func _ready() -> void:
+    add_to_group("camera")
     target_position = position
     if has_node("Camera2D"):
         target_zoom = $Camera2D.zoom.x
@@ -40,13 +43,20 @@ func _process(delta: float) -> void:
     target_position += movement * speed * delta * zoom_factor
     
     # Smoothly move towards target position
-    position = position.lerp(target_position, smoothing * delta)
+    var new_position = position.lerp(target_position, smoothing * delta)
+    var position_changed = new_position != position
+    position = new_position
     
     # Smoothly update zoom
+    var zoom_changed = false
     if has_node("Camera2D"):
         var current_zoom = $Camera2D.zoom.x
         var new_zoom = lerp(current_zoom, target_zoom, smoothing * delta)
+        zoom_changed = new_zoom != current_zoom
         $Camera2D.zoom = Vector2(new_zoom, new_zoom)
+    
+    if position_changed or zoom_changed:
+        transform_changed.emit()
 
 func _unhandled_input(event: InputEvent) -> void:
     if not has_node("Camera2D"):

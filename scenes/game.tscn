@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=4 uid="uid://0j67c5xdwsut"]
+[gd_scene load_steps=23 format=4 uid="uid://0j67c5xdwsut"]
 
 [ext_resource type="Script" path="res://src/grid.gd" id="1_m77mo"]
 [ext_resource type="TileSet" uid="uid://b3vc7u7mutyv1" path="res://tilesets/basic_stone.tres" id="1_q7w06"]
@@ -8,6 +8,7 @@
 [ext_resource type="Material" uid="uid://caek8hlcujy82" path="res://materials/space_mat.tres" id="4_e8rjm"]
 [ext_resource type="PackedScene" uid="uid://buu55kay33ai0" path="res://scenes/furniture/core/core.tscn" id="5_5p1kq"]
 [ext_resource type="Script" path="res://scenes/camera.gd" id="5_g3bcb"]
+[ext_resource type="Script" path="res://src/orc.gd" id="6_g6vus"]
 [ext_resource type="Texture2D" uid="uid://b25ee2kn78sa6" path="res://sprites/TinyRPGCharSet/Characters(100x100)/Orc/Orc/Orc-Idle.png" id="6_wkv3c"]
 [ext_resource type="AudioStream" uid="uid://ckkmmgfn1xqsc" path="res://audio/music/Adrift.mp3" id="7_1ix7m"]
 [ext_resource type="Texture2D" uid="uid://dic4xmiikes4t" path="res://sprites/icons/square.png" id="9_7nmvy"]
@@ -100,12 +101,13 @@ tile_set = ExtResource("1_q7w06")
 
 [node name="Orc" type="Node2D" parent="Agents"]
 position = Vector2(-376, 1)
+script = ExtResource("6_g6vus")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Agents/Orc"]
 sprite_frames = SubResource("SpriteFrames_1shf4")
 autoplay = "default"
 
-[node name="Camera" type="Node2D" parent="."]
+[node name="Camera" type="Node2D" parent="." groups=["camera"]]
 script = ExtResource("5_g3bcb")
 
 [node name="Camera2D" type="Camera2D" parent="Camera"]

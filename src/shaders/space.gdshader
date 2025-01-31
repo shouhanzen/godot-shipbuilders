@@ -18,9 +18,9 @@ void fragment() {
 	vec2 normCoordBig = FRAGCOORD.xy+floor(offset/bigStarSlow);
 	vec2 normCoordMedium = FRAGCOORD.xy+floor(offset/mediumStarSlow);
 	vec2 normCoordSmall = FRAGCOORD.xy+floor(offset/smallStarSlow);
-	
+
 	float color = 0.0;
-	
+
 	float size = 20.0;
 	float prob = 1.0-mediumStarAmount;
 	vec2 pos = floor(1.0 / size * normCoordMedium);
@@ -34,7 +34,7 @@ void fragment() {
 		color = 1.0 - distance(normCoordMedium.xy, center) / (0.5 * size);
 		color = color * t / (abs(normCoordMedium.y - center.y)) * t / (abs(normCoordMedium.x - center.x));
 	}
-	
+
 	// Draw Big stars
 	size = 100.0;
 	prob = 1.0-bigStarAmount;
@@ -48,7 +48,7 @@ void fragment() {
 		color = 1.0 - distance(normCoordBig.xy, center) / (0.5 * size);
 		color = color * t / (abs(normCoordBig.y - center.y)) * t / (abs(normCoordBig.x - center.x));
 	}
-	
+
 	// Draw Small stars
 	if (rand(normCoordSmall / 20.0) > 1.0-smallStarAmount)
 	{

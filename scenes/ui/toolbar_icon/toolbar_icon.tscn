@@ -10,9 +10,11 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 script = ExtResource("1_1rxmg")
+icon = ExtResource("1_muctr")
 
 [node name="TextureButton" type="TextureButton" parent="."]
 layout_mode = 2
+mouse_default_cursor_shape = 2
 texture_normal = ExtResource("1_muctr")
 ignore_texture_size = true
 stretch_mode = 5
